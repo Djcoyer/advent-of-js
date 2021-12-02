@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>01 - Pomodoro || Advent of JavaScript</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+
+<body>
+
+  <div class="wrapper">
+    <div class="ring">
+      <svg width="518" height="518" viewBox="0 0 518 518">
+        <circle stroke-width="9px" x="0" y="y" cx="259" cy="259" r="254" />
+      </svg>
+    </div>
+
+    <div class="timer">
+      <div class="time">
+        <div class="minutes">
+          <input type="text" value="15" id="minutes" disabled/>
+        </div>
+        <div class="colon">:</div>
+        <div class="seconds">
+          <input type="text" value="00" id="seconds" disabled/>
+        </div>
+      </div>
+      <button class="toggle-active">start</button>
+      <button class="settings">
+        <img src="images/gear.svg" alt="Settings" />
+      </button>
+    </div>
+  </div>
+
+
+<script type="text/javascript">
+  window.onload = function() {
+    let timerActive = false;
+    let timerInterval;
+    let seconds = document.getElementById('seconds');
+    let minutes = document.getElementById('minutes');
+    const toggleButton = document.getElementsByClassName('toggle-active')[0];
+    const settingsButton = document.getElementsByClassName('settings')[0];
+
+    function finishTimer() {
+      document.getElementsByClassName('ring')[0].classList.add('ending');
+      timerActive = false;
+      clearInterval(timerInterval);
+      toggleButton.textContent = 'Start';
+      window.alert("Timer Complete!");
+    }
+
+    function executeInterval() {
+      let secondsValue = parseInt(seconds.value);
+      let minutesValue = parseInt(minutes.value);
+
+      if(secondsValue === 0) {
+        if(minutesValue > 0) {
+          seconds.value = '59';
+          if(minutesValue <= 10)
+            minutes.value = `0${minutesValue - 1}`
+          else minutes.value = minutesValue - 1;
+        }
+        else {
+          minutes.value = '00';
+          seconds.value = '00';
+          finishTimer();
+        }
+      } else {
+        if(secondsValue < 10)
+          seconds.value = `0${secondsValue - 1}`;
+        else seconds.value = secondsValue - 1;
+      }
+    }
+
+    settingsButton.addEventListener('click', function() {
+      //If timer is active, don't activate
+      if(timerActive)
+        return;
+      minutes.disabled = false;
+      seconds.disabled = false;
+      minutes.focus();
+    })
+
+    toggleButton.addEventListener('click', function() {
+      //If the timer was active and click is executed, cancel
+      if(timerActive) {
+        clearInterval(timerInterval);
+        timerActive = false;
+        toggleButton.textContent = 'Start';
+        settingsButton.disabled = false;
+        settingsButton.classList.remove('disabled');
+      }
+      else {
+        timerActive = true;
+        //Disable the ability to changing the time
+        settingsButton.classList.add('disabled');
+        toggleButton.textContent = 'Stop';
+
+        seconds.disabled = true;
+        minutes.disabled = true;
+
+        //Get rid of the 'end' class if present
+        document.getElementsByClassName('ring')[0].className = 'ring';
+        timerInterval = setInterval(executeInterval, 1000);
+      }
+    });
+  }
+</script>
+</body>
+
+</html>
